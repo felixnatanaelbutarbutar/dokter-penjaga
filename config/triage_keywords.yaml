@@ -1,0 +1,58 @@
+# Kategori 1: Kardiologi / Jantung (Kritis)
+cardiology:
+  - serangan jantung
+  - henti jantung
+  - dada sesak berat
+  - nyeri dada
+  - pingsan mendadak
+  - tidak sadarkan diri
+  - jatuh tidak sadar
+  - berdebar sangat kencang
+  - pandangan gelap
+
+# Kategori 2: Respirasi / Pernapasan (Kritis)
+respiratory:
+  - henti napas
+  - tidak bisa bernapas
+  - tersedak parah
+  - asfiksia
+  - membiru
+  - sesak napas akut
+  - nafasnya tersengal-sengal
+
+# Kategori 3: Neurologi (Kritis)
+neurology:
+  - stroke
+  - lumpuh separuh
+  - lumpuh sebelah
+  - bicara pelo
+  - kejang-kejang
+  - tidak sadar
+  - mulut mencong mendadak
+
+# Kategori 4: Trauma & Pendarahan (Kritis)
+trauma:
+  - pendarahan hebat
+  - darah mengucur
+  - keluar banyak
+  - luka tusuk dalam
+  - kecelakaan
+  - amputasi
+  - luka bakar luas
+  - mengeluarkan darah
+
+# Kategori 5: Toksikologi & Overdosis (Kritis)
+toxicology:
+  - overdosis
+  - keracunan
+  - minum racun
+  - obat serangga
+  - telan cairan pembersih
+  - over dosis
+
+# Kategori 6: Psikiatri (Kritis)
+psychiatry:
+  - bunuh diri
+  - mau mati
+  - iris nadi
+  - akhiri hidup

@@ -1,0 +1,23 @@
+# Pola Injeksi Prompt (Jailbreak / Prompt Injection)
+injection_patterns:
+  - "ignore previous instructions"
+  - "ignore all previous instructions"
+  - "forget previous instructions"
+  - "act as"
+  - "pretend you are"
+  - "kamu sekarang adalah"
+  - "abaikan instruksi"
+  - "abaikan semua instruksi"
+  - "system prompt"
+  - "system role"
+  - "bypass guardrails"
+  - "tanpa etika"
+
+# Pola Permintaan Berbahaya Ekstrem
+lethal_requests:
+  - "dosis mematikan"
+  - "cara bunuh diri"
+  - "obat untuk mati"
+  - "racun paling ampuh"
+  - "dosis lethal"
+  - "lethal dose"

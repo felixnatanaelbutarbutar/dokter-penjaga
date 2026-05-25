@@ -1,0 +1,67 @@
+{
+  "total_queries": 5,
+  "successful_retrievals": 5,
+  "details": [
+    {
+      "query": "Apa pedoman terbaru untuk tekanan darah tinggi menurut WHO?",
+      "expected_substring": "Hypertension",
+      "retrieved_titles": [
+        "WHO Guideline for the Pharmacological Treatment of Hypertension in Adults",
+        "Updated Recommendations on Paracetamol Maximum Daily Dose",
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification",
+        "WHO Essential Medicines - Paracetamol Monograph and Fever Management in Adults and Children",
+        "WHO Guideline for the Pharmacological Treatment of Hypertension in Adults"
+      ],
+      "recall_at_5": 1
+    },
+    {
+      "query": "Berapa dosis maksimal paracetamol sehari?",
+      "expected_substring": "Paracetamol",
+      "retrieved_titles": [
+        "Updated Recommendations on Paracetamol Maximum Daily Dose",
+        "WHO Essential Medicines - Paracetamol Monograph and Fever Management in Adults and Children",
+        "WHO Essential Medicines - Paracetamol Monograph and Fever Management in Adults and Children",
+        "WHO Essential Medicines - Paracetamol Monograph and Fever Management in Adults and Children",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management"
+      ],
+      "recall_at_5": 1
+    },
+    {
+      "query": "Bagaimana klasifikasi diabetes mellitus?",
+      "expected_substring": "Diabetes",
+      "retrieved_titles": [
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification",
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management",
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification"
+      ],
+      "recall_at_5": 1
+    },
+    {
+      "query": "Pengobatan farmakologis hipertensi pada orang dewasa",
+      "expected_substring": "Hypertension",
+      "retrieved_titles": [
+        "WHO Guideline for the Pharmacological Treatment of Hypertension in Adults",
+        "WHO Guideline for the Pharmacological Treatment of Hypertension in Adults",
+        "Updated Recommendations on Paracetamol Maximum Daily Dose",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management",
+        "WHO Consolidated Guidelines on Tuberculosis - Module 4: Treatment of Drug-Susceptible Tuberculosis"
+      ],
+      "recall_at_5": 1
+    },
+    {
+      "query": "Panduan diagnosis diabetes tipe 2",
+      "expected_substring": "Diabetes",
+      "retrieved_titles": [
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management",
+        "WHO Classification of Diabetes Mellitus and Its Complications - Diagnosis and Classification",
+        "2023 ESC Guidelines for the management of acute coronary syndromes",
+        "WHO Clinical Guidelines on Diabetes Mellitus Type 2 Management"
+      ],
+      "recall_at_5": 1
+    }
+  ],
+  "recall_at_5": 1.0
+}

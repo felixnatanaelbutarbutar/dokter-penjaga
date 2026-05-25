@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokter Penjaga - AI Medical Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --chat-bg: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --user-msg: #3b82f6;
+            --bot-msg: rgba(51, 65, 85, 0.8);
+            --emergency-bg: rgba(239, 68, 68, 0.15);
+            --emergency-border: #ef4444;
+            --emergency-text: #fca5a5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            height: 90vh;
+            background: var(--chat-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header .avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .chat-header .title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .chat-header .title p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 16px 20px;
+            border-radius: 20px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--user-msg);
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: var(--bot-msg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.bot.emergency {
+            background: var(--emergency-bg);
+            border: 1px solid var(--emergency-border);
+            color: var(--emergency-text);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        .message.bot .sources {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .message.bot .sources ul {
+            margin-top: 4px;
+            padding-left: 20px;
+        }
+
+        .message.bot .sources a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        .message.bot .sources a:hover {
+            text-decoration: underline;
+        }
+
+        .chat-input {
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.5);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 100px;
+            padding: 0 24px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .chat-input input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .chat-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-hover);
+            transform: scale(1.05);
+        }
+        
+        .chat-input button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            background: var(--bot-msg);
+            border-radius: 16px;
+            align-self: flex-start;
+            align-items: center;
+            display: none;
+        }
+
+        .typing-indicator.active {
+            display: flex;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); background: white; }
+        }
+
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+        .markdown-body p { margin-bottom: 12px; }
+        .markdown-body ul, .markdown-body ol { margin-bottom: 12px; padding-left: 20px; }
+        .markdown-body strong { color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="avatar">🩺</div>
+            <div class="title">
+                <h1>Dokter Penjaga</h1>
+                <p><span class="status-dot"></span> AI Assistant Aktif & Tersertifikasi</p>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="message bot markdown-body">
+                <p>Halo! Saya <strong>Dokter Penjaga</strong>, asisten AI medis Anda yang didukung oleh pedoman medis terkini.</p>
+                <p>Ada keluhan apa hari ini? (Jika ini keadaan darurat, mohon segera hubungi 119)</p>
+            </div>
+            
+            <div class="typing-indicator" id="typing">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Ketik keluhan atau pertanyaan medis Anda..." autocomplete="off">
+            <button id="send-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Gunakan marked.js untuk rendering markdown dari Claude -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        const sessionId = "session-" + Math.random().toString(36).substring(2, 9);
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const typingIndicator = document.getElementById('typing');
+
+        function appendMessage(text, sender, isEmergency = false, sources = []) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender} markdown-body`;
+            if (isEmergency) msgDiv.classList.add('emergency');
+
+            if (sender === 'bot') {
+                try {
+                    if (typeof marked !== 'undefined') {
+                        msgDiv.innerHTML = typeof marked.parse === 'function' ? marked.parse(text) : marked(text);
+                    } else {
+                        // Fallback jika library marked gagal di-load (misal tidak ada internet)
+                        msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+                    }
+                } catch (e) {
+                    console.error("Markdown parse error:", e);
+                    msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+                }
+                
+                // Tambahkan referensi jika ada
+                if (sources && sources.length > 0) {
+                    const srcDiv = document.createElement('div');
+                    srcDiv.className = 'sources';
+                    srcDiv.innerHTML = '<strong>Referensi Medis:</strong><ul>' + 
+                        sources.map(s => `<li>${s.title} (${s.year}) - <a href="${s.url}" target="_blank">Lihat Dokumen</a></li>`).join('') +
+                        '</ul>';
+                    msgDiv.appendChild(srcDiv);
+                }
+            } else {
+                msgDiv.textContent = text;
+            }
+
+            // Sisipkan pesan tepat sebelum indikator typing
+            chatMessages.insertBefore(msgDiv, typingIndicator);
+            scrollToBottom();
+        }
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Hapus input dan tampilkan pesan user
+            userInput.value = '';
+            appendMessage(text, 'user');
+            
+            // Tampilkan typing
+            typingIndicator.classList.add('active');
+            scrollToBottom();
+            
+            sendBtn.disabled = true;
+            userInput.disabled = true;
+
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: text, session_id: sessionId })
+                });
+
+                if (!response.ok) throw new Error('API Error');
+
+                const data = await response.json();
+                
+                typingIndicator.classList.remove('active');
+                appendMessage(data.answer, 'bot', data.is_emergency, data.sources);
+                
+            } catch (err) {
+                console.error(err);
+                typingIndicator.classList.remove('active');
+                appendMessage("Maaf, terjadi kesalahan saat menghubungi server.", 'bot');
+            } finally {
+                sendBtn.disabled = false;
+                userInput.disabled = false;
+                userInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    </script>
+</body>
+</html>

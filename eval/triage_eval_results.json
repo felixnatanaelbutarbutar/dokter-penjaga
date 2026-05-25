@@ -1,0 +1,134 @@
+{
+  "metrics": {
+    "total": 20,
+    "tp": 10,
+    "tn": 10,
+    "fp": 0,
+    "fn": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  },
+  "details": [
+    {
+      "text": "Saya merasa nyeri dada kiri yang menjalar ke lengan",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: CARDIOLOGY (Keyword: 'nyeri dada')"
+    },
+    {
+      "text": "Anak saya pingsan dan tidak sadarkan diri",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: CARDIOLOGY (Keyword: 'tidak sadarkan diri')"
+    },
+    {
+      "text": "Ada darah segar yang keluar banyak setelah kecelakaan",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: TRAUMA (Keyword: 'keluar banyak')"
+    },
+    {
+      "text": "Teman saya kejang-kejang di lantai",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: NEUROLOGY (Keyword: 'kejang-kejang')"
+    },
+    {
+      "text": "Bapak saya tiba-tiba lumpuh sebelah badan dan bicara pelo",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: NEUROLOGY (Keyword: 'lumpuh sebelah')"
+    },
+    {
+      "text": "Seseorang tersedak dan wajahnya mulai membiru",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: RESPIRATORY (Keyword: 'membiru')"
+    },
+    {
+      "text": "Adik saya minum obat serangga 1 botol",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: TOXICOLOGY (Keyword: 'obat serangga')"
+    },
+    {
+      "text": "Napas saya sesak banget sampai mau mati rasanya",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: PSYCHIATRY (Keyword: 'mau mati')"
+    },
+    {
+      "text": "Jantung berdebar sangat kencang dan pandangan gelap",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: CARDIOLOGY (Keyword: 'berdebar sangat kencang')"
+    },
+    {
+      "text": "Luka sayatan pisau terus mengeluarkan darah",
+      "expected": true,
+      "predicted": true,
+      "reason": "Terdeteksi kondisi darurat pada kategori: TRAUMA (Keyword: 'mengeluarkan darah')"
+    },
+    {
+      "text": "Apa obat untuk demam ringan pada balita?",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Tolong jelaskan apa itu diabetes melitus",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Apakah paracetamol aman untuk ibu hamil?",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Gigi saya ngilu kalau minum air dingin",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Cara mencegah penyakit jantung bawaan",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Saya pilek dan batuk berdahak sudah 2 hari",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Berapa tekanan darah normal untuk lansia?",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Kepala saya pusing setelah kehujanan kemarin",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Di mana saya bisa membeli vitamin C?",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    },
+    {
+      "text": "Kulit saya agak gatal dan kemerahan",
+      "expected": false,
+      "predicted": false,
+      "reason": ""
+    }
+  ]
+}
