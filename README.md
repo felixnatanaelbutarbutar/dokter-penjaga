@@ -20,9 +20,9 @@ Dokumen ini berfungsi ganda sebagai *README* repositori dan *Technical Report* r
 
 ## 2. Data
 
-Sistem kami mengasimilasi data medis *open-access* tervalidasi yang difokuskan pada:
-- **Klinis & Pedoman:** Diutamakan dari pedoman World Health Organization (WHO) dan literatur jurnal PubMed *Open Access*.
-- **Pemrosesan Metadata:** Data dimasukkan melalui *Ingestion Pipeline* khusus kami. Segala dokumen yang masuk WAJIB memiliki metadata `year`, `title`, dan `source`. Dokumen tanpa atribut tahun yang jelas akan **ditolak secara otomatis** (Hard Check) guna mencegah sistem mengacu pada praktik medis kedaluwarsa.
+Sistem kami mengasimilasi data medis yang difokuskan pada format pedoman klinis:
+- **Klinis & Pedoman (Prototype):** Untuk keperluan MVP (*Minimum Viable Product*) Hackathon ini, *knowledge base* yang kami gunakan adalah **data sintetis (*dummy data*)** berformat JSON yang kami buat sedemikian rupa agar meniru struktur, gaya bahasa, dan kedalaman medis dari pedoman *World Health Organization* (WHO) dan literatur jurnal *PubMed*.
+- **Pemrosesan Metadata:** Data dimasukkan melalui *Ingestion Pipeline* khusus kami. Segala dokumen yang masuk WAJIB memiliki metadata `year`, `title`, dan `source` (wajib diisi 'who' atau 'pubmed'). Dokumen tanpa atribut tahun yang jelas akan **ditolak secara otomatis** (Hard Check) guna mencegah sistem mengacu pada praktik medis kedaluwarsa.
 - **Chunking Strategy:** Teks dokumen dipecah (*chunked*) berbasis paragraf dengan irisan tumpang-tindih (*overlap*) sejauh 64 token untuk mempertahankan keutuhan konteks antar sub-kalimat.
 
 ## 3. Model

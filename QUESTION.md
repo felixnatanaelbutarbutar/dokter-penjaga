@@ -40,6 +40,10 @@ Gunakan dokumen ini untuk berlatih menjawab pertanyaan Juri saat Demo *Dokter Pe
 - Buka terminal dan jalankan: `.venv\Scripts\python scripts/run_factual_eval.py`
 - **Penjelasan Teknis ke Juri:** *"Metrik utama kami adalah **Factual Accuracy** (melalui LLM-as-Judge) dan **Recall@5** (untuk Retrieval). Mengapa ini *reliable*? Karena di dunia medis, halusinasi berakibat fatal. Hakim LLM yang kami bangun secara khusus diinstruksikan untuk HANYA memberi skor 1 jika jawaban didukung 100% oleh dokumen WHO, dan skor 0 jika ada 1 kata saja yang mengarang. Hasil evaluasi kami membuktikan sistem mencapai Factual Accuracy 100%."*
 
+### 6. Dataset (Prototype Data)
+**Pertanyaan Juri:** *Apakah dokumen pedoman klinis yang digunakan ini asli ditarik langsung dari WHO?*
+**Cara Menjawab:** *"Untuk keperluan prototipe kompetisi (MVP) ini, dokumen di dalam basis pengetahuan kami buat secara **sintetis (dummy data)** berformat JSON, namun dirancang ketat agar meniru struktur, gaya bahasa, dan kedalaman informasi persis seperti pedoman klinis asli WHO dan jurnal PubMed. Sistem *Ingestion Pipeline* kami dirancang agnostik, sehingga kelak saat di-deploy ke rumah sakit sungguhan, kami tinggal mengganti file dummy ini dengan ratusan dokumen PDF asli tanpa merombak satu baris kode pun."*
+
 ---
 
 ## 🟡 NICE TO HAVE
