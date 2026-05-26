@@ -11,7 +11,7 @@
 |----------|-----|
 | **Web UI (Chatbot)** | [https://entourage-earmuff-paternal.ngrok-free.dev/](https://entourage-earmuff-paternal.ngrok-free.dev/) |
 | **REST API (Swagger)** | [https://entourage-earmuff-paternal.ngrok-free.dev/docs](https://entourage-earmuff-paternal.ngrok-free.dev/docs) |
-| **Health Check** | [https://entourage-earmuff-paternal.ngrok-free.dev/healthz](https://entourage-earmuff-paternal.ngrok-free.dev/healthz) |
+| **Health Check** | [https://entourage-earmuff-paternal.ngrok-free.dev/health](https://entourage-earmuff-paternal.ngrok-free.dev/health) |
 
 > ⚠️ Endpoint ini berjalan di atas laptop lokal yang di-expose via Ngrok. Pastikan laptop dalam kondisi menyala dan terhubung internet saat evaluasi.
 
