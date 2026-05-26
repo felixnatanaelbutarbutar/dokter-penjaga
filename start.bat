@@ -14,7 +14,7 @@ timeout /t 3 /nobreak >nul
 echo [2/2] Menghubungkan Ngrok Tunnel...
 echo CATATAN: Ganti "STATIC_DOMAIN_ANDA" di baris di bawah ini dengan domain dari dashboard Ngrok Anda!
 echo.
-start "Ngrok Tunnel" cmd /k ".\ngrok.exe http --url=STATIC_DOMAIN_ANDA 8000"
+start "Ngrok Tunnel" cmd /k ".\ngrok.exe http --url=entourage-earmuff-paternal.ngrok-free.dev 8000"
 
 echo.
 echo  ====================================================

@@ -1,54 +1,98 @@
-# Technical Report: Dokter Penjaga
-> **INaAI Hackathon 2026 Final Deliverable**  
-> **Track:** AI Engineer · **Domain 3:** Medical AI / Health NLP  
-> **Author:** Felix Natanael Butarbutar  
+# Dokter Penjaga — Emergency-Aware Medical RAG Agent
 
-Dokumen ini berfungsi sebagai draf utama untuk *Technical Report* (2-3 halaman) Anda yang siap disalin/diubah menjadi format LaTeX.
+> **INaAI Hackathon 2026 · Track: AI Engineer · Domain 3: Medical AI / Health NLP**  
+> **Author:** Felix Natanael Butarbutar
 
 ---
 
-## 1. System Design (Arsitektur Sistem)
-Sistem **Dokter Penjaga** dirancang bukan sebagai agen percakapan generik, melainkan sebagai mesin penalaran medis yang dilindungi oleh pipa arsitektur **Defense-in-Depth**. Karena beroperasi di domain risiko tinggi, sistem ini menganut prinsip: *"Selamatkan nyawa dulu, jawab kemudian."*
+## 🔴 Live Inference Endpoint
 
-Alur arsitektur (*Layered Pipelines*) berjalan secara sekuensial:
-1. **Data Privacy (PII Redaction):** Kueri *input* masuk ke modul `core/pii.py`. Menggunakan arsitektur NLP lokal (Microsoft Presidio & spaCy), identitas pribadi (Nama, NIK, Lokasi, Nomor HP) disensor (*redact*) secara *on-the-fly* menjadi token generik (misal: `<PERSON>`) sebelum menembus batas jaringan ke *eksternal* LLM.
-2. **Deterministik Triage (Gawat Darurat):** Model deteksi ancaman nyawa memindai frasa bahaya (seperti "nyeri dada", "sesak napas"). Apabila dipicu, sistem memotong (mem-*bypass*) seluruh sisa rantai RAG dan memaksa respon deterministik instan (< 0.1 detik) yang mengarahkan pengguna ke layanan gawat darurat (119).
-3. **Lexical Guardrail (Keamanan Prompt):** Penyaring pra-LLM memblokir injeksi *prompt* (mis: "Abaikan instruksi sebelumnya") dan permintaan dosis letal, menghemat biaya token dengan menggagalkan serangan pada level aplikasi (*O(1) complexity*).
-4. **Hybrid Retrieval (Dense + Sparse):** Kueri diproses dengan vektorisasi. Hasil pencarian dari Qdrant (semantik) digabungkan dengan indeks BM25 (pencocokan kata kunci eksak, sangat penting untuk ejaan nama obat yang rumit) melalui pembobotan matematis *alpha*. Dokumen kadaluwarsa dikenai penalti bobot oleh algoritma *Temporal Filter*.
-5. **LLM Synthesis & Output Guardrail:** LLM memformulasikan jawaban berbasis dokumen medis terpilih. Sistem melakukan pemindaian terakhir pada *output* untuk menahan LLM agar tidak bertindak sebagai dokter definitif (mencegah *prescribing*).
+| Resource | URL |
+|----------|-----|
+| **Web UI (Chatbot)** | [https://entourage-earmuff-paternal.ngrok-free.dev/](https://entourage-earmuff-paternal.ngrok-free.dev/) |
+| **REST API (Swagger)** | [https://entourage-earmuff-paternal.ngrok-free.dev/docs](https://entourage-earmuff-paternal.ngrok-free.dev/docs) |
+| **Health Check** | [https://entourage-earmuff-paternal.ngrok-free.dev/healthz](https://entourage-earmuff-paternal.ngrok-free.dev/healthz) |
+
+> ⚠️ Endpoint ini berjalan di atas laptop lokal yang di-expose via Ngrok. Pastikan laptop dalam kondisi menyala dan terhubung internet saat evaluasi.
+
+---
+
+## 1. System Design
+
+**Dokter Penjaga** adalah agen RAG medis yang dirancang bukan sebagai chatbot generik, melainkan sebagai mesin penalaran klinis berlapis (**Defense-in-Depth**). Sistem ini menganut satu prinsip: *"Selamatkan nyawa dulu, jawab kemudian."*
+
+Alur pipeline berjalan secara sekuensial:
+
+```
+Input → [PII Redaction] → [Triage Gate] → [Input Guardrail]
+      → [Hybrid Retrieval + Temporal Filter]
+      → [LLM Generation (Claude)] → [Output Guardrail]
+      → [Audit Log] → Response
+```
+
+1. **PII Redaction (`core/pii.py`):** Microsoft Presidio + spaCy mendeteksi dan menyensor identitas (Nama, NIK, Nomor HP) menjadi token anonim `<PERSON>` sebelum menyentuh LLM eksternal.
+2. **Deterministik Triage (`core/triage.py`):** Keyword kritis ("nyeri dada", "sesak napas") mem-bypass seluruh RAG pipeline dan merespons darurat dalam < 0.1 detik — tanpa melibatkan LLM sama sekali.
+3. **Lexical Guardrail (`core/guardrails.py`):** Regex pattern matching memblokir prompt injection dan permintaan dosis letal di level aplikasi sebelum membuang token API.
+4. **Hybrid Retrieval (`core/retrieval.py`):** Dense search (Qdrant) + BM25 sparse search digabungkan dengan pembobotan α. Temporal Filter mengurangi bobot dokumen kadaluwarsa.
+5. **Output Guardrail:** Output LLM divalidasi untuk mencegah sistem bertindak sebagai "prescribing doctor".
 
 ## 2. Data
-Fokus pengetahuan agen (*Knowledge Base*) kami didasarkan pada pedoman klinis standar:
-- **Karakteristik Data Prototipe (MVP):** Untuk mendemonstrasikan kapabilitas RAG secara langsung di lingkungan Hackathon, basis data kami menggunakan struktur JSON *dummy* sintetis. Data ini secara teliti memodelkan struktur linguistik, format metadata, dan kedalaman taksonomi dari publikasi asli *World Health Organization* (WHO) dan literatur terbuka *PubMed*.
-- **Ingestion Pipeline:** Proses *ingestion* bersikap ketat (Agnostik). Setiap titik data WAJIB lolos validasi skema (membutuhkan kunci metadata `year`, `title`, dan `source`). Absensi metadata krusial akan memicu *Hard Reject* otomatis, mengeliminasi risiko masuknya pengetahuan klinis tanpa referensi waktu (*timeline-agnostic hallucination*).
-- **Chunking Strategy:** Mempertahankan koherensi paragraf dengan strategi pemecahan ukuran variabel, menerapkan *overlap* 64 token guna mencegah hilangnya konteks antar-halaman (*semantic continuity loss*).
 
-## 3. Model
-Untuk menggerakkan sistem hibrida ini, kami menggunakan ansambel 3 lapis model:
-- **Embedding Model (`paraphrase-multilingual-mpnet-base-v2`):** Mentransformasi dokumen dan kueri menjadi vektor *dense*. Kemampuan *multilingual*-nya sangat krusial di Indonesia, di mana pasien sering menggunakan *code-switching* (campuran ID/EN, misal: "saya mengalami *chest pain*"). 
-- **Large Language Model (Anthropic Claude 3.5 Sonnet):** Bertindak sebagai otak sintesis di ekosistem RAG. Sonnet diplih karena keunggulan *Context Window* (200k), rasio biaya-ke-kepintaran yang superior, dan keandalan tinggi dalam mematuhi batasan *System Prompt* (Guardrails).
-- **NLP NER Model (`id_core_news_lg` spaCy):** Model spesifik-bahasa (*Language-Specific*) tanpa koneksi internet yang mendeteksi Entitas Named (PII) dengan kecepatan *sub-millisecond*.
+- **Knowledge Base (MVP):** Basis data kami menggunakan file JSON sintetis yang memodelkan struktur, metadata, dan terminologi pedoman *WHO* dan jurnal *PubMed Open Access*. Pipeline *ingestion* (`data/ingest.py`) bersifat agnostik — siap menerima PDF asli tanpa perubahan kode di lingkungan produksi.
+- **Validation:** Setiap dokumen wajib memiliki metadata `year`, `title`, `source`. Absensi metadata memicu *Hard Reject* otomatis (mencegah *timeline-agnostic hallucination*).
+- **Chunking:** Paragraph-based chunking dengan overlap 64 token untuk mempertahankan koherensi konteks.
 
-## 4. Evaluation (Metrik & Kinerja)
-Kami membangun *eval framework* otomatis tanpa campur tangan manusia untuk melakukan pengujian stres (Red Teaming):
-- **Retrieval Recall@5 (Hasil: 100% | Target: ≥ 0.80):** Akurasi sistem menempatkan dokumen pedoman yang benar dalam 5 kandidat ruang pencarian teratas.
-- **Factual Accuracy (Hasil: 100% | Target: ≥ 0.75):** Menggunakan evaluasi *LLM-as-Judge*, dengan instruksi *Zero-Knowledge* (Hakim dilarang menggunakan pengetahuan internal model, hanya mengecek keselarasan jawaban terhadap dokumen yang di-RAG).
-- **Triage Detection (F1-Score: 1.00):** Validasi biner deterministik membuktikan 0% *False Negative* pada kasus uji kegawatdaruratan mematikan.
+## 3. Model Stack
+
+| Komponen | Model | Fungsi |
+|----------|-------|--------|
+| Embedding | `paraphrase-multilingual-mpnet-base-v2` | Dense vector untuk semantic search (multilingual ID/EN) |
+| LLM | Anthropic Claude 3.5 Sonnet | RAG synthesis & guardrail compliance |
+| NER / PII | `id_core_news_lg` spaCy + Presidio | Named-entity recognition lokal (tanpa network call) |
+
+## 4. Evaluation Results
+
+Seluruh evaluasi dapat direproduksi dengan menjalankan skrip di bawah ini.
+
+| Metric | Script | Target | **Hasil** |
+|--------|--------|--------|-----------|
+| Retrieval Recall@5 | `python scripts/run_retrieval_eval.py` | ≥ 0.80 | **1.00** |
+| Factual Accuracy (LLM-as-Judge) | `python scripts/run_factual_eval.py` | ≥ 0.75 | **1.00** |
+| Triage Detection F1 | `python scripts/run_triage_eval.py` | ≥ 0.90 | **1.00** |
+| Guardrail Block Rate | `python scripts/run_eval.py` | ≥ 0.95 | **1.00** |
+
+> **LLM-as-Judge methodology:** Hakim dikonfigurasi dengan instruksi *zero-knowledge* — dilarang menggunakan pengetahuan internalnya sendiri, hanya mengevaluasi keselarasan antara output dan dokumen konteks RAG yang diberikan.
 
 ## 5. AI Usage Log
-Secara komprehensif (seperti terdokumentasi dalam `AI_USAGE_LOG.md`), integrasi AI secara otonom dimanfaatkan dalam pengembangan sistem ini. AI Assistant (Gemini) diutilisasi hingga 90% pada perancangan basis kode (Boilerplating FastAPI, Pipeline Ingestion), pembuatan ratusan kueri pengujian *adversarial* (Red Teaming sintetis), dan perumusan matriks evaluasi otomatis. Manusia (Author) memegang 10% kontrol pada sisi pengarahan arsitektur *Safety-First* dan filosofi batas medis.
 
-## 6. Limitations (Batasan MVP)
-Dalam konteks keterbatasan waktu Hackathon (MVP), kami menyadari ada beberapa bagian eksekusi teknis yang masih kurang optimal dan perlu diperbaiki untuk fase produksi:
-1. **Tidak Ada PDF Parser (Hanya Dummy JSON):** Saat ini, kami belum sempat mengintegrasikan *Optical Character Recognition* (OCR) atau `PyMuPDF` untuk memecah tabel kompleks dari PDF asli WHO. Oleh karena itu, *Knowledge Base* kami saat ini masih bergantung pada pembuatan file sintesis berformat JSON (*dummy data*).
-2. **BM25 Tokenizer Terlalu Sederhana:** Modul *Sparse Search* (BM25) kami saat ini hanya memecah kata berdasarkan spasi (*whitespace tokenizer*). Kami belum sempat mengintegrasikan algoritma *Stemming* Indonesia (seperti PySastrawi), sehingga imbuhan kata (misal: "mengobati" vs "obat") belum tertangani dengan baik oleh pencarian eksak.
-3. **Stateless API (Tanpa Memori Sesi):** Endpoint `/api/chat/ask` saat ini belum didukung oleh basis data riwayat percakapan (seperti Redis atau Postgres). Akibatnya, AI tidak bisa menjawab pertanyaan lanjutan (*follow-up questions*) karena tidak mengingat konteks kueri pengguna sebelumnya.
-4. **Antarmuka Minimalis:** Sisi *Frontend* saat ini hanya dibangun menggunakan Vanilla HTML/JS sederhana, belum menggunakan kerangka kerja produksi yang tangguh seperti React atau Next.js untuk menangani *state management* dan analitik.
+Ringkasan: **90% AI / 10% Human**. Detail lengkap di [`AI_USAGE_LOG.md`](AI_USAGE_LOG.md).
+
+- **AI (Gemini Agent):** Perancangan kode infrastruktur (FastAPI, pipeline ingestion, hybrid retrieval), pembuatan dataset adversarial sintetis, penulisan eval framework otomatis.
+- **Human (Author):** Pengarahan filosofi *Safety-First*, keputusan arsitektur defense-in-depth, validasi etika medis.
+
+## 6. Limitations
+
+Batasan teknis yang kami sadari dalam konteks MVP Hackathon ini:
+
+1. **Knowledge Base Sintetis:** Belum mengintegrasikan PDF parser (`PyMuPDF`) untuk mengekstrak dokumen asli WHO. Data saat ini adalah JSON dummy terstruktur.
+2. **BM25 Tokenizer Sederhana:** Belum menggunakan algoritma stemming bahasa Indonesia (PySastrawi), sehingga pencocokan imbuhan kata belum optimal.
+3. **Stateless Sessions:** API tidak memiliki memori percakapan (belum terintegrasi Redis/Postgres). Konteks antar-pertanyaan tidak dipertahankan.
+4. **Frontend Minimalis:** Dibangun dengan Vanilla HTML/JS — belum menggunakan React/Next.js untuk state management yang lebih robust.
 
 ---
 
-## Cara Menjalankan (untuk Evaluasi)
+## Reproducible Evaluation
 
-Panduan lengkap untuk menjalankan server lokal dan mengekspos *endpoint* ke publik menggunakan Ngrok tersedia di dokumen terpisah:
+```bash
+# Setup
+python -m venv .venv && .venv\Scripts\activate
+pip install -r requirements.txt
 
-**→ Lihat [DEPLOYMENT.md](DEPLOYMENT.md)**
+# Run all eval scripts
+python scripts/run_triage_eval.py
+python scripts/run_factual_eval.py
+python scripts/run_retrieval_eval.py
+python scripts/run_eval.py
+```
+
+**→ Panduan deployment lengkap: [DEPLOYMENT.md](DEPLOYMENT.md)**

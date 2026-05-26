@@ -130,20 +130,19 @@ Kembali ke terminal **pertama** (yang menjalankan `uvicorn`). Saat Juri mengirim
 
 > **Solusi Terbaik:** Ngrok memberikan **1 Static Domain gratis** ke setiap akun. URL ini tidak akan pernah berubah meskipun laptop di-restart berkali-kali.
 
-### Cara Klaim Static Domain Ngrok:
-1. Masuk ke [https://dashboard.ngrok.com/domains](https://dashboard.ngrok.com/domains)
-2. Klik tombol **"+ New Domain"** atau **"Claim your free static domain"**
-3. Ngrok akan langsung membuatkan domain permanen untuk Anda secara otomatis (contoh: `solid-lemur-entirely.ngrok-free.app`)
-4. Salin nama domain tersebut.
-
-### Cara Menggunakan Static Domain:
-Setelah mendapatkan *static domain*, ganti perintah Ngrok biasa dengan:
-```powershell
-# Ganti "solid-lemur-entirely.ngrok-free.app" dengan domain milik Anda
-.\ngrok.exe http --url=solid-lemur-entirely.ngrok-free.app 8000
+### Domain Statis Anda (Sudah Aktif):
+Domain permanen Anda adalah:
+```
+https://entourage-earmuff-paternal.ngrok-free.dev
 ```
 
-Sekarang URL `https://solid-lemur-entirely.ngrok-free.app` akan **selalu sama** dan bisa Anda bagikan ke Juri sebelum hari penilaian!
+### Cara Menggunakan Static Domain:
+Gunakan perintah ini setiap kali memulai sesi Ngrok:
+```powershell
+.\ngrok.exe http --url=entourage-earmuff-paternal.ngrok-free.dev 8000
+```
+
+URL `https://entourage-earmuff-paternal.ngrok-free.dev` akan **selalu sama** meskipun laptop di-restart berkali-kali!
 
 ---
 
