@@ -49,3 +49,11 @@ models/
 # OS
 .DS_Store
 Thumbs.db
+
+# Internal Competition Documents (not for public repo)
+FASE*.md
+QUESTION.md
+RULES.md
+CONTEXT.md
+TASKS.md
+tasks.md

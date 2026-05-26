@@ -47,29 +47,8 @@ Dalam konteks keterbatasan waktu Hackathon (MVP), kami menyadari ada beberapa ba
 
 ---
 
-## 🚀 PANDUAN DEPLOYMENT UNTUK JURI (MENGGUNAKAN NGROK)
+## Cara Menjalankan (untuk Evaluasi)
 
-Untuk memberikan akses Inference Endpoint yang *Deployed* dan dapat diuji langsung oleh Juri dari perangkat mereka (tanpa perlu repot dengan infrastruktur Cloud yang sering OOM / *Out of Memory* pada *free-tier*), kami menggunakan **Ngrok (Secure Tunneling)**. Ini adalah metode standar industri yang paling bersih dan andal.
+Panduan lengkap untuk menjalankan server lokal dan mengekspos *endpoint* ke publik menggunakan Ngrok tersedia di dokumen terpisah:
 
-Berikut adalah langkah-langkah detail dan berurutannya:
-
-**Langkah 1: Siapkan Server API Lokal (FastAPI)**
-1. Buka terminal komputer Anda.
-2. Aktifkan *virtual environment*: `.venv\Scripts\activate`
-3. Nyalakan peladen: `uvicorn api.main:app --host 0.0.0.0 --port 8000`
-4. Biarkan terminal ini tetap menyala. API Anda sekarang hidup di `http://localhost:8000`.
-
-**Langkah 2: Hubungkan API ke Internet Publik dengan Ngrok**
-1. Buka terminal/CMD **baru** (biarkan terminal pertama tetap jalan).
-2. Ketik perintah pengeksposan *port* 8000:
-   ```bash
-   ngrok http 8000
-   ```
-3. Ngrok akan segera menghubungkan laptop Anda ke server awan global dan memunculkan tampilan "Session Status: Online".
-4. Cari bagian **"Forwarding"**, di sana Anda akan melihat tautan unik yang dilindungi SSL hijau, contohnya: `https://abcd-123.ngrok-free.app`
-
-**Langkah 3: Berikan Akses Endpoint ke Juri**
-1. Salin URL hijau dari Ngrok tersebut (misal: `https://abcd-123.ngrok-free.app`).
-2. Kirim tautan tersebut kepada Dewan Juri, atau mintalah Juri membuka tautan tersebut diikuti dengan `/docs` (misal: `https://abcd-123.ngrok-free.app/docs`).
-3. Juri akan langsung disambut oleh halaman antarmuka **Swagger UI FastAPI**. Dari sana, mereka bebas melakukan uji tembak (*Hit Endpoint*) `/api/chat/ask` untuk menguji *Code-Switching*, Injeksi PII, atau Kasus Darurat (Triage). 
-4. Segala *log audit* dan pembuktian *redaction* akan mencuat *real-time* di layar laptop Anda untuk diinspeksi oleh Juri.
+**→ Lihat [DEPLOYMENT.md](DEPLOYMENT.md)**
