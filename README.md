@@ -38,11 +38,12 @@ Kami membangun *eval framework* otomatis tanpa campur tangan manusia untuk melak
 ## 5. AI Usage Log
 Secara komprehensif (seperti terdokumentasi dalam `AI_USAGE_LOG.md`), integrasi AI secara otonom dimanfaatkan dalam pengembangan sistem ini. AI Assistant (Gemini) diutilisasi hingga 90% pada perancangan basis kode (Boilerplating FastAPI, Pipeline Ingestion), pembuatan ratusan kueri pengujian *adversarial* (Red Teaming sintetis), dan perumusan matriks evaluasi otomatis. Manusia (Author) memegang 10% kontrol pada sisi pengarahan arsitektur *Safety-First* dan filosofi batas medis.
 
-## 6. Limitations (Batasan & Tantangan AI)
-Dalam analisis objektif, sistem AI kami memiliki beberapa batasan melekat (*inherent limitations*) yang membutuhkan iterasi lanjutan:
-1. **Semantic Shift pada Multilingual Embedding:** Model `mpnet-base-v2` terkadang kehilangan nuansa spesifik pada jargon medis bahasa lokal. Kata serapan medis dalam bahasa Indonesia dapat dipetakan secara vektor (*semantic shift*) terlalu jauh dari literatur berbahasa Inggris aslinya, yang berpotensi menurunkan skor kemiripan *Cosine Similarity* secara keliru.
-2. **Context Window vs Critical Nuance:** Meski Claude 3.5 Sonnet memiliki jendela konteks besar, menyuapkan terlalu banyak dokumen hasil RAG (*over-retrieval*) secara bersamaan dapat memicu fenomena "Lost in the Middle". LLM mungkin melewatkan peringatan kontraindikasi obat yang berada tepat di tengah-tengah paragraf referensi.
-3. **LLM-as-Judge Bias:** Evaluasi Factual Accuracy saat ini dilakukan oleh Claude 3.5 Sonnet itu sendiri. Berbagai literatur riset mengindikasikan bahwa LLM memiliki kecenderungan *Self-Preference Bias* (menilai jawaban generasinya sendiri lebih tinggi atau gagal menangkap halusinasi mikroskopis). Untuk tingkat produksi (*clinical grade*), diperlukan komite hakim gabungan (contoh: Llama 3 70B & GPT-4o) untuk memvalidasi secara silang (*cross-validation*).
+## 6. Limitations (Batasan MVP)
+Dalam konteks keterbatasan waktu Hackathon (MVP), kami menyadari ada beberapa bagian eksekusi teknis yang masih kurang optimal dan perlu diperbaiki untuk fase produksi:
+1. **Tidak Ada PDF Parser (Hanya Dummy JSON):** Saat ini, kami belum sempat mengintegrasikan *Optical Character Recognition* (OCR) atau `PyMuPDF` untuk memecah tabel kompleks dari PDF asli WHO. Oleh karena itu, *Knowledge Base* kami saat ini masih bergantung pada pembuatan file sintesis berformat JSON (*dummy data*).
+2. **BM25 Tokenizer Terlalu Sederhana:** Modul *Sparse Search* (BM25) kami saat ini hanya memecah kata berdasarkan spasi (*whitespace tokenizer*). Kami belum sempat mengintegrasikan algoritma *Stemming* Indonesia (seperti PySastrawi), sehingga imbuhan kata (misal: "mengobati" vs "obat") belum tertangani dengan baik oleh pencarian eksak.
+3. **Stateless API (Tanpa Memori Sesi):** Endpoint `/api/chat/ask` saat ini belum didukung oleh basis data riwayat percakapan (seperti Redis atau Postgres). Akibatnya, AI tidak bisa menjawab pertanyaan lanjutan (*follow-up questions*) karena tidak mengingat konteks kueri pengguna sebelumnya.
+4. **Antarmuka Minimalis:** Sisi *Frontend* saat ini hanya dibangun menggunakan Vanilla HTML/JS sederhana, belum menggunakan kerangka kerja produksi yang tangguh seperti React atau Next.js untuk menangani *state management* dan analitik.
 
 ---
 
