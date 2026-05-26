@@ -121,3 +121,57 @@ Kembali ke terminal **pertama** (yang menjalankan `uvicorn`). Saat Juri mengirim
 | Port 8000 sudah digunakan | Ganti port: `uvicorn api.main:app --port 8001` dan `ngrok http 8001` |
 | Ngrok menampilkan "ERR_NGROK_8012" | Anda sudah menjalankan 1 sesi Ngrok di terminal lain. Tutup terminal itu terlebih dahulu (akun Free Tier hanya boleh 1 sesi aktif bersamaan) |
 | API menjawab 500 Internal Server Error | Periksa apakah file `.env` sudah terisi lengkap dengan `ANTHROPIC_API_KEY` yang valid |
+
+---
+
+## Bonus — URL Ngrok Permanen (Static Domain, Gratis!)
+
+> **Masalah:** Setiap kali laptop dimatikan dan Ngrok di-restart, URL publiknya akan **berubah** (misal dari `abcd-123.ngrok-free.app` menjadi `xyz-456.ngrok-free.app`). Anda harus memberitahu Juri URL baru setiap sesi.
+
+> **Solusi Terbaik:** Ngrok memberikan **1 Static Domain gratis** ke setiap akun. URL ini tidak akan pernah berubah meskipun laptop di-restart berkali-kali.
+
+### Cara Klaim Static Domain Ngrok:
+1. Masuk ke [https://dashboard.ngrok.com/domains](https://dashboard.ngrok.com/domains)
+2. Klik tombol **"+ New Domain"** atau **"Claim your free static domain"**
+3. Ngrok akan langsung membuatkan domain permanen untuk Anda secara otomatis (contoh: `solid-lemur-entirely.ngrok-free.app`)
+4. Salin nama domain tersebut.
+
+### Cara Menggunakan Static Domain:
+Setelah mendapatkan *static domain*, ganti perintah Ngrok biasa dengan:
+```powershell
+# Ganti "solid-lemur-entirely.ngrok-free.app" dengan domain milik Anda
+.\ngrok.exe http --url=solid-lemur-entirely.ngrok-free.app 8000
+```
+
+Sekarang URL `https://solid-lemur-entirely.ngrok-free.app` akan **selalu sama** dan bisa Anda bagikan ke Juri sebelum hari penilaian!
+
+---
+
+## Tips: Menjalankan dengan Cepat Saat Penilaian
+
+Anda **tidak perlu** membiarkan terminal menyala sepanjang hari. Cukup jalankan semuanya **5 menit sebelum Juri datang**. Seluruh proses startup hanya butuh ±20 detik.
+
+Untuk memudahkan, buat file `start.bat` di dalam folder proyek. Isinya:
+
+```bat
+@echo off
+echo [1/3] Mengaktifkan virtual environment...
+call .venv\Scripts\activate
+
+echo [2/3] Menjalankan API FastAPI di background...
+start "Dokter Penjaga API" cmd /k "call .venv\Scripts\activate && uvicorn api.main:app --host 0.0.0.0 --port 8000"
+
+echo [3/3] Menghubungkan ke Ngrok...
+timeout /t 3 /nobreak >nul
+start "Ngrok Tunnel" cmd /k "ngrok http --url=GANTI_DENGAN_STATIC_DOMAIN_ANDA 8000"
+
+echo.
+echo ===================================================
+echo   Dokter Penjaga SIAP! Lihat URL di jendela Ngrok.
+echo ===================================================
+pause
+```
+
+> **Cara pakai:** Klik dua kali file `start.bat` tersebut. Dua jendela terminal akan terbuka otomatis — satu untuk API, satu untuk Ngrok. Tunggu URL muncul di jendela Ngrok, lalu berikan ke Juri.
+
+> **Catatan penting:** Jangan tutup kedua jendela terminal tersebut selama sesi penilaian berlangsung.
